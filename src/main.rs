@@ -3,7 +3,7 @@ use std::path::Path;
 
 mod XelMath;
 
-use XelMath::vector;
+use XelMath::vector::Vec3;
 
 fn main() {
     //Start by writing out a test image
@@ -40,6 +40,8 @@ fn main() {
         println!("Failed to write image with given error: {}", e);
     }
 
-    let temp = vector::Vec3::new(255, 240, 255);
-    println!("test {} {} {}", temp.x(), temp.y(), temp.z());
+    let temp = Vec3::new(255.0, 240.0, 255.0);
+    let temp2 = Vec3::new(200.0, 200.0, 200.0);
+    let temp3 = temp - temp2;
+    println!("{:?} - {:?} = {:?}", temp, temp2, temp3);
 }
