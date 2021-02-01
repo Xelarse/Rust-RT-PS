@@ -1,10 +1,9 @@
 pub mod vector
 {
     use std::ops::{Add, Sub, Mul, Div};
-    use std::num;
 
     #[derive(Copy, Clone, Debug)]
-    pub struct Vec3 
+    pub struct Vec3
     {
         _e: [f64; 3]
     }
@@ -56,6 +55,50 @@ pub mod vector
         {
             return self.len_sq().sqrt();
         }
+
+        pub fn dot(self, rhs: Vec3) -> f64
+        {
+            return (self._e[0] * rhs._e[0]) + (self._e[1] * rhs._e[1]) + (self._e[2] * rhs._e[2]);
+        }
+
+        pub fn cross(self, rhs: Vec3) -> Vec3
+        {
+            return Vec3{
+                _e: [
+                    (self._e[1] * rhs._e[2]) - (self._e[2] * rhs._e[1]),
+                    (self._e[2] * rhs._e[0]) - (self._e[0] * rhs._e[2]),
+                    (self._e[0] * rhs._e[1]) - (self._e[1] * rhs._e[0])
+                ]
+            };
+        }
+
+        pub fn unit_vec(self) -> Vec3
+        {
+            return self / self.len();
+        }
+
+        //Static Funcs
+        pub fn hdr_to_rgb(lhs: Vec3) -> Vec3
+        {
+            return Vec3{
+                _e: [
+                    255.999 * lhs._e[0],
+                    255.999 * lhs._e[1],
+                    255.999 * lhs._e[2]
+                ]
+            };
+        }
+
+        pub fn rgb_to_hdr(lhs: Vec3) -> Vec3
+        {
+            return Vec3{
+                _e: [
+                    255.999 * lhs._e[0],
+                    255.999 * lhs._e[1],
+                    255.999 * lhs._e[2]
+                ]
+            };
+        }
     }
 
     //Vec3 operators
@@ -79,13 +122,26 @@ pub mod vector
         }
     }
 
+    //Used for Multiplying Vec3 by another Vec3 aka (Vec3 * Vec3)
     impl Mul for Vec3
     {
         type Output = Self;
         
-        fn mul(self, rhs: Self) -> Self::Output
+        fn mul(self, rhs: Self) -> Self
         {
             Self {_e: [self._e[0] * rhs._e[0], self._e[1] * rhs._e[1], self._e[2] * rhs._e[2]]}
+        }
+    }
+
+    //Used for Multiplying Vec3 by a f64 SPECIFICALLY (Vec3 * f64) and not (f64 * Vec3)
+    //Therefore whatever after the for is lhs and the type in the angled brackets is rhs. 
+    impl Mul<f64> for Vec3
+    {
+        type Output = Self;
+        
+        fn mul(self, rhs: f64) -> Self
+        {
+            Self {_e: [self._e[0] * rhs, self._e[1] * rhs, self._e[2] * rhs]}
         }
     }
 
@@ -93,12 +149,50 @@ pub mod vector
     {
         type Output = Self;
         
-        fn div(self, rhs: Self) -> Self::Output
+        fn div(self, rhs: Self) -> Self
         {
             Self {_e: [self._e[0] / rhs._e[0], self._e[1] / rhs._e[1], self._e[2] / rhs._e[2]]}
         }
     }
+
+    impl Div<f64> for Vec3
+    {
+        type Output = Self;
+        
+        fn div(self, rhs: f64) -> Self
+        {
+            let ratio = 1.0 / rhs;
+            Self {_e: [self._e[0] * ratio, self._e[1] * ratio, self._e[2] * ratio]}
+        }
+    }
 }
+
+pub mod ray
+{
+    use super::vector::Vec3;
+
+    #[derive(Copy, Clone, Debug)]
+    struct Ray
+    {
+        ori: Vec3,
+        dir: Vec3
+    }
+
+    #[allow(dead_code)]
+    impl Ray
+    {
+        pub fn new(origin: Vec3, direction: Vec3) -> Ray
+        {
+            return Ray{ori: origin, dir: direction};
+        }
+
+        pub fn at(self, t: f64) -> Vec3
+        {
+            return self.ori + (self.dir * t);
+        }
+    }
+}
+
 
 // pub mod vector
 // {

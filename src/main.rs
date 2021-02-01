@@ -23,16 +23,19 @@ fn main() {
     {
         println!("Lines Remaining: {}", OUTPUT_HEIGHT - y);
         for x in 0..OUTPUT_WIDTH
-        {            
-            let r = x as f64 / (OUTPUT_WIDTH - 1) as f64;
-            let g = y as f64 / (OUTPUT_HEIGHT - 1) as f64;
-            let b = 0.25;
+        {
+            let hdr_col = Vec3::new(
+                x as f64 / (OUTPUT_WIDTH - 1) as f64, 
+                y as f64 / (OUTPUT_HEIGHT - 1) as f64, 
+                0.25);
 
             let pixel = image_buffer.get_pixel_mut(x, OUTPUT_HEIGHT - (y + 1));
-            pixel[0] = (255.999 * r) as u8;
-            pixel[1] = (255.999 * g) as u8;
-            pixel[2] = (255.999 * b) as u8;
-            pixel[3] = 255;            
+
+            let rgb_col = Vec3::hdr_to_rgb(hdr_col);
+            pixel[0] = rgb_col.x() as u8;
+            pixel[1] = rgb_col.y() as u8;
+            pixel[2] = rgb_col.z() as u8;
+            pixel[3] = 255;         
         }
     }
 
@@ -43,5 +46,6 @@ fn main() {
     let temp = Vec3::new(255.0, 240.0, 255.0);
     let temp2 = Vec3::new(200.0, 200.0, 200.0);
     let temp3 = temp - temp2;
-    println!("{:?} - {:?} = {:?}", temp, temp2, temp3);
+    let temp4 = temp3 / 5.0;
+    println!("{:?} - {:?} = {:?}; {:?} / 5 = {:?}", temp, temp2, temp3, temp3, temp4);
 }
